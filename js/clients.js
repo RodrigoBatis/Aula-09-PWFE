@@ -20,7 +20,15 @@ const createClient = async (client) => {
     console.log(response.ok)
 }
 
+const deleteClient = async (codigo) => {
+    const options = {
+        'method': 'DELETE'
+    }
+    const response = await fetch(`${url}/${codigo}`, options)
+}
+
 export{
     readClients,
-    createClient
+    createClient,
+    deleteClient
 }

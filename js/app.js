@@ -1,7 +1,7 @@
 "use strict"
 
 import {openModal, closeModal} from './modal.js'
-import { readClients, createClient} from './clients.js'
+import { readClients, createClient, deleteClient} from './clients.js'
 
 const createRow = (client) =>{
     const row = document.createElement('tr')
@@ -44,19 +44,16 @@ const saveClient = async () =>{
     updateTable()
 }
 
-const deleteClient = (codigo) () =>{
-    
-}
-
-
-const actionCliente = (event) => {
+const actionCliente = async (event) => {
     if (event.target.type == 'button')
     {
        const [action, codigo] = event.target.id.split('-')
        if(action == "editar"){
 
        }else if(action == 'excluir'){
-           deleteClient(codigo)
+           await deleteClient(codigo)
+           window.alert("Cliente excluido com sucesso!!")
+           updateTable()
        }
     }
 }
