@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/button.css">
     <link rel="stylesheet" href="./css/records.css">
     <link rel="stylesheet" href="./css/modal.css">
-    <script type="module" src="./js/app.js" defer></script>
+    <script src="./js/app.js" type="module" defer></script>
     <title>CRUD</title>
 </head>
 <body>
@@ -29,8 +29,8 @@
                     <th>Ação</th>
                 </tr>
             </thead>
-            <tbody id="clients-container">
-            
+            <tbody id="clientsInfo">
+
             </tbody>
         </table>
         <div class="modal" id="modal">
@@ -39,11 +39,11 @@
                     <h2>Novo Cliente</h2>
                     <span class="modal-close" id="modalClose">&#10006;</span>
                 </header>
-                <form class="modal-form">
-                    <input type="text" class="modal-field" placeholder="Nome do Cliente" id="nome">
-                    <input type="email" class="modal-field" placeholder="e-mail do Cliente" id="email">
-                    <input type="text" class="modal-field" placeholder="Celular do Cliente" id="celular">
-                    <input type="text" class="modal-field" placeholder="Cidade do Cliente" id="cidade">
+                <form class="modal-form" id="modal-form">
+                    <input type="text" class="modal-field" placeholder="Nome do Cliente" id="txtNome">
+                    <input type="email" class="modal-field" placeholder="E-mail do Cliente" id="txtEmail">
+                    <input type="text" class="modal-field" placeholder="Celular do Cliente" id="txtCelular">
+                    <input type="text" class="modal-field" placeholder="Cidade do Cliente" id="txtCidade">
                 </form>
                 <footer class="modal-footer">
                     <button class="button green" id="salvar">Salvar</button>
@@ -53,7 +53,7 @@
         </div>
     </main>
     <footer>
-        Copyright &copy; Prof. Fernando Leonid
+        Copyright &copy; Thales Santos
     </footer>
 </body>
 </html>
