@@ -1,170 +1,117 @@
-"use strict";
+'use strict'
 
-// Import
-import { openModal, closeModal } from "./modal.js";
-import {
-  readClients,
-  createClient,
-  deleteClient,
-  // readClient,
-  updateClient
-} from "./clients.js";
+import {openModal, closeModal} from './modal.js'
+import {readClients, createClient, deleteClient, updateClient} from './clients.js'
 
-// Tabela
-/**
- * Parâmetros
- * @param {JSON} client - Objeto JSON que contenha:
- *                          id, nome, email, cidade e celular
- * @returns {HTMLTableRowElement} - Linha de uma tabela que é constituída com
- *                                  Table Columns inseridas nela
- */
-const createRow = ({id, nome, email, celular, cidade}) => {
-  const row = document.createElement("tr");
-  row.innerHTML = `
+const createRow = ({nome, email, celular,cidade, id}) => {
+    const row = document.createElement('tr')
+    row.innerHTML = `
         <td>${nome}</td>
         <td>${email}</td>
         <td>${celular}</td>
         <td>${cidade}</td>
         <td>
-            <button type="button" class="button green" onClick="editClient(${id})" ">editar</button>
+            <button type="button" class="button green" onClick="editClient(${id})" >editar</button>
             <button type="button" class="button red" onClick="delClient(${id})">excluir</button>
         </td>
-    `;
-
-  return row;
-};
+    `
+    return row
+}
 
 const updateTable = async () => {
-  const clientsInfo = document.getElementById("clientsInfo");
+    const clientsContainer = document.getElementById('clients-container')
 
-  // 1º - Ler a API e armazenar o resultado em uma variável
-  const clients = await readClients();
+    // Ler a API e armazenar o resultado em uma variavel
+    const clients = await readClients()
+    
+    // Preencher a tabela com as informações
+    const rows = clients.map(createRow)
+    clientsContainer.replaceChildren(...rows)
+}
 
-  // 2º - Preencher a tabela com as informações obtidas da API
-  const rows = clients.map(createRow);
-  clientsInfo.replaceChildren(...rows);
-};
+const isEdit = () => document.getElementById('nome').hasAttribute('data-id')
 
-/**
- * Função para carregar os dados do cliente a editar na modal
- * @param {String} idClient ID do cliente para busca
- * @return {VoidFunction} Sem retorno
- */
-const updateModal = async (idClient) => {
-  const client  = await readClient(idClient)
+const saveClient = async() => {
 
-  // Inserindo dados
-  document.getElementById("txtCelular").value = client.celular;
-  document.getElementById("txtCidade").value = client.cidade;
-  document.getElementById("txtEmail").value = client.email;
-  document.getElementById("txtNome").value = client.nome;
-};
+    const form = document.getElementById('modal-form')
 
-// CRUD
-const isEdit = () => document.getElementById('txtNome').hasAttribute('data-client-id')
+    // Criar um json com as informações do cliente
+    const client = {
+        "id": "",
+        "nome": document.getElementById('nome').value,
+        "email": document.getElementById('email').value,
+        "celular": document.getElementById('celular').value,
+        "cidade": document.getElementById('cidade').value
+    }
 
-const saveClient = async () => {
-  // 1º Criar um JSON com as informações do cliente
-  const client = {
-    celular: document.getElementById("txtCelular").value,
-    cidade: document.getElementById("txtCidade").value,
-    email: document.getElementById("txtEmail").value,
-    id: "",
-    nome: document.getElementById("txtNome").value,
-  };
-  
-  // 2º Enviar o JSON para a Servidor API
-  if(isEdit()) {
-    client.id = document.getElementById('txtNome').dataset.id
-    await updateClient(client)
-  }
-  else 
-    createClient(client);
-  
+    if(form.reportValidity()){
+        if (isEdit()) {
+            client.id = document.getElementById('nome').dataset.id
+            await updateClient(client)
+        } else{
+            await createClient(client)
+        }  
 
-  // 3º Fechar modal
-  closeModal();
+        closeModal()
 
-  // 4º Atualizar tabela
-  updateTable();
-};
+        updateTable()
+    }
+    
+}
 
 const fillForm = (client) => {
-  console.log(client)
-  document.getElementById('txtNome').value = client.nome
-  document.getElementById('txtEmail').value = client.email
-  document.getElementById('txtCidade').value = client.cidade
-  document.getElementById('txtCelular').value = client.celular
-    
-  document.getElementById('txtNome').dataset.id = client.id
+    document.getElementById('nome').value = client.nome
+    document.getElementById('email').value = client.email
+    document.getElementById('celular').value = client.celular
+    document.getElementById('cidade').value = client.cidade
+    document.getElementById('nome').dataset.id = client.id
 }
 
 globalThis.editClient = async (id) => {
-  // Armazenar os dados do cliente selecionado
-  const client = await readClients(id)
+    // Armazenar as informações do cliente selecionado em um variável
+    const client = await readClients(id)
 
-  // Preecher formulário com as informações
-  fillForm(client)
+    //  Preencher formulário com as informações
+    fillForm(client)
 
-
-  // Abrir a modal
-  openModal()
+    // Abrir a modal no estado de edição
+    openModal()
 }
 
-globalThis.delClient = async (id) => {
-  await deleteClient(id)
-  updateTable()
+globalThis.delClient = async(id) => {
+    await deleteClient(id)
+    updateTable()
 }
 
+// const actionClient = async (event) => {
+//     if (event.target.type == 'button'){
 
-// const actionClient = (event) => {
-//   if (event.target.type == "button") {
-//     const [action, idClient] = event.target.id.split("-");
+//         const [action, codigo] = event.target.id.split('-')
 
-//     switch (action) {
-
-//       case "editar":
-//         // Função para atualizar cliente
-//         openModal();
-
-//         // Inserindo atributo dataset para diferenciar as operações
-//         document.getElementById('modal').setAttribute('data-id-client', idClient);
-
-//         // Chamando função que realiza a atualização dos dados do cliente
-//         updateModal(idClient)
-
-
-//         break;
-//       case "excluir":
-//         // Função para excluir o Cliente
-//         if (window.confirm("Você realmente deseja exluir este contato?")) {
-//           if (deleteClient(idClient)) {
-//             alert("Cliente exluido com sucesso.");
-//             updateTable();
-//           }
+//         if (action == 'editar'){
+        
+//         }else if (action == 'excluir'){
+//             await deleteClient(codigo)
+//             updateTable()
 //         }
-//         break;
-
-//       default:
-//         break;
 //     }
-//   }
-// };
+// }
 
-// Executando Funções
-updateTable();
+const maskCelular = ({target}) =>{
+    
+    let text = target.value
+
+    text = text.replace(/[^0-9]/g,'') 
+    text = text.replace(/(.{2})(.{5})(.{4})/, '($1) $2-$3') 
+    text = text.replace(/(.{15})(.*)/, '$1') 
+
+    target.value = text
+}
+
+updateTable()
 
 // Eventos
-document
-  .getElementById("cadastrarCliente")
-  .addEventListener("click", openModal);
-document.getElementById("salvar").addEventListener("click", () => {
-  const edit = document.getElementById("modal").dataset.idClient
-  if(!edit !== undefined)
-    saveClient()
-  else
-    updateClient()
-
-
-});
-// document.getElementById("clientsInfo").addEventListener("click", actionClient);
+document.getElementById('cadastrarCliente').addEventListener('click', openModal)
+document.getElementById('salvar').addEventListener('click', saveClient)
+document.getElementById('celular').addEventListener('keyup', maskCelular)
+// document.getElementById('clients-container').addEventListener('click', actionClient )
