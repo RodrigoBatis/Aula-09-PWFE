@@ -1,8 +1,8 @@
 'use strict'
 
 // Url Base
- // const url = 'https://testeleonid.herokuapp.com/'
-  const url = 'http://localhost/rodrigo/cliente/'
+  const url = 'https://testeleonid.herokuapp.com/'
+ // const url = 'http://localhost/rodrigo/cliente/'
 
 
 /**
